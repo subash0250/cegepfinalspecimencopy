@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "400942111580",
+    "firebase_url": "https://specimen-copy-default-rtdb.firebaseio.com",
+    "project_id": "specimen-copy",
+    "storage_bucket": "specimen-copy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:400942111580:android:58a0cf988b1e1235e03f99",
+        "android_client_info": {
+          "package_name": "com.example.flutterspecimencopy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUSnd4FcMvErkK2GJH1Jwm4NrMSBHBZLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
