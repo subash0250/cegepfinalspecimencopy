@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterspecimencopy/Screens/AdminHome_tab.dart';
 import 'package:flutterspecimencopy/Screens/UserManagementScreen_Admin.dart';
+import 'ContentModerationScreen_Admin.dart';
 import 'profile_tab.dart';
 
 
@@ -18,6 +19,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   static List<Widget> _widgetOptions = <Widget>[
     AdminhomeTab(),
     UserManagementTab(),
+    ContentModerationScreen(),
     ProfileTab(),
   ];
 
@@ -41,6 +43,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'UserManager',
+            backgroundColor: Colors.black,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.report),
+            label: 'reports',
             backgroundColor: Colors.black,
           ),
           BottomNavigationBarItem(

@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'UserHistoryScreen_admin.dart';
+
 class UserManagementTab extends StatefulWidget {
   @override
   _UserManagementTabState createState() => _UserManagementTabState();
@@ -18,7 +20,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
       appBar: AppBar(
         title: Text('User Management'),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.blue,
       ),
       body: StreamBuilder(
         stream: _usersRef.onValue,
@@ -43,8 +45,8 @@ class _UserManagementTabState extends State<UserManagementTab> {
               String userId = userList[index].key;
               bool isBanned = user['isBanned'] ?? false;
               String role = user['userRole'] ??
-                  'user';
-
+                  'user'; // Updated to match your structure
+              int reports = user['reports'] ?? 0;
 
               return ListTile(
                 leading: CircleAvatar(
@@ -52,6 +54,7 @@ class _UserManagementTabState extends State<UserManagementTab> {
                   child: Text(user['userName']?.substring(0, 1) ?? 'U'),
                 ),
                 title: Text(user['userName'] ?? 'Unknown User'),
+                subtitle: Text('Role: $role | Reports: $reports'),
                 trailing: PopupMenuButton(
                   onSelected: (value) => _handleUserAction(value, userId),
                   itemBuilder: (context) =>
@@ -71,7 +74,10 @@ class _UserManagementTabState extends State<UserManagementTab> {
                       value: 'remove',
                       child: Text('Remove User'),
                     ),
-
+                    PopupMenuItem(
+                      value: 'viewHistory',
+                      child: Text('View Reports & History'),
+                    ),
                   ],
                 ),
               );
@@ -96,7 +102,9 @@ class _UserManagementTabState extends State<UserManagementTab> {
       case 'remove':
         await _removeUser(userId);
         break;
-
+      case 'viewHistory':
+        _viewUserHistory(userId);
+        break;
     }
   }
 
@@ -128,7 +136,12 @@ class _UserManagementTabState extends State<UserManagementTab> {
     );
   }
 
-
+  void _viewUserHistory(String userId) {
+    Navigator.push(
+      context,
+       MaterialPageRoute(builder: (context) => UserHistoryScreen(userId: userId)),
+    );
+  }
 
 }
 
