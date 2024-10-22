@@ -61,21 +61,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
           // Define the additional user fields including the role
           await _database.ref('users/$userId').set({
-            'userBio': _bioController.text, // User bio from text field
+            'userBio': _bioController.text,
             'userCreatedAt': DateTime.now().toString(),
             'userEmail': user.email,
-            'userName': _nameController.text, // Username from text field
-            'userProfileImage': 'https://firebasestorage.googleapis.com/v0/b/conectivity-app.appspot.com/o/profile_images%2Fdefault_profile.png?alt=media&token=1f649470-3a12-45a3-90b7-eb045a37939c', // Placeholder image URL
-            'userRole': _selectedRole,
-            'userStatus': 'active', 
-          });
-          // Hide the loading spinner
-          _hideLoadingSpinner(context);
-          // Navigate to home screen after successful sign-up
-          Navigator.pushReplacementNamed(context, '/home', arguments: {
-            'userId': userId,
             'userName': _nameController.text,
+            'userProfileImage': 'https://firebasestorage.googleapis.com/v0/b/conectivity-app.appspot.com/o/profile_images%2Fdefault_profile.png?alt=media&token=1f649470-3a12-45a3-90b7-eb045a37939c',
+            'userRole': _selectedRole,
+            'userStatus': 'active',
+            'isBanned': false,
+            'reports': 0,
           });
+
+          _hideLoadingSpinner(context);
+           Navigator.pushReplacementNamed(context, '/sign-in'
+          );
         }
       } on FirebaseAuthException catch (e) {
         setState(() {

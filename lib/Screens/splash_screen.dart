@@ -17,21 +17,21 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Background color
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Logo or image
             Image.asset(
-              'assets/images/logo.jpeg', // Replace with your logo asset path
-              height: 100, // Adjust the height to your preference
+              'assets/images/logo.jpeg',
+              height: 100,
             ),
             SizedBox(height: 20),
 
             // App name or welcome text
             Text(
-              'Welcome to Connectify', // Replace with your app name
+              'Welcome to Connectify',
               style: TextStyle(
                 fontSize: 24,
                 color: Colors.black,
@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
             // Loading indicator
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white), // Loading spinner color
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),
           ],
         ),

@@ -2,7 +2,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutterspecimencopy/Screens/ModeratorHomeScreen.dart';
-
 import '../screens/home_screen.dart';
 import 'AdminHomeScreen.dart';
 
@@ -41,7 +40,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<void> _signInWithEmailPassword() async {
     setState(() {
-      // Reset error messages before validation
+
       emailError = '';
       passwordError = '';
     });
@@ -97,7 +96,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (role == 'admin') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => Adminhomescreen()),
+          MaterialPageRoute(builder: (context) => AdminHomeScreen()),
         );
       } else if (role == 'moderator') {
         Navigator.pushReplacement(

@@ -1,22 +1,23 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'home_tab.dart';
-import 'followers_tab.dart';
-import 'post_tab.dart';
+import 'package:flutterspecimencopy/Screens/AdminHome_tab.dart';
+import 'package:flutterspecimencopy/Screens/UserManagementScreen_Admin.dart';
 import 'profile_tab.dart';
 
-class Adminhomescreen extends StatefulWidget {
-  @override
-  _AdminhomescreenState createState() => _AdminhomescreenState();
-}
 
-class _AdminhomescreenState extends State<Adminhomescreen> {
+
+class AdminHomeScreen extends StatefulWidget {
+  const AdminHomeScreen({super.key});
+
+  @override
+  State<AdminHomeScreen> createState() => _AdminHomeScreenState();
+}
+class _AdminHomeScreenState extends State<AdminHomeScreen> {
   int _selectedIndex = 0;
 
   static List<Widget> _widgetOptions = <Widget>[
-    HomeTab(),
-    FollowersFragment(),
-    PostTab(),
+    AdminhomeTab(),
+    UserManagementTab(),
     ProfileTab(),
   ];
 
@@ -34,31 +35,27 @@ class _AdminhomescreenState extends State<Adminhomescreen> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'AdminHome',
-            backgroundColor: Colors.black, // Background color for Home tab
+            label: 'Home',
+            backgroundColor: Colors.black,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Followers',
-            backgroundColor: Colors.black, // Background color for Followers tab
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Post',
-            backgroundColor: Colors.black, // Background color for Post tab
+            icon: Icon(Icons.settings),
+            label: 'UserManager',
+            backgroundColor: Colors.black,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
-            backgroundColor: Colors.black, // Background color for Profile tab
+            backgroundColor: Colors.black,
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white, // Highlight color for selected item
-        unselectedItemColor: Colors.grey[600], // Color for unselected items
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey[600],
         onTap: _onItemTapped,
-        type: BottomNavigationBarType.shifting, // To allow different tab background colors
+        type: BottomNavigationBarType.shifting,
       ),
     );
   }
 }
+

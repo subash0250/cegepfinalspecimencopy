@@ -1,14 +1,13 @@
 
 import 'dart:io';
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:image_picker/image_picker.dart'; // Add this import for image picking
+import 'package:image_picker/image_picker.dart';
 import 'comment_screen.dart';
 import 'package:path/path.dart' as path;
-// Import the new CommentsScreen
+
 
 class HomeTab extends StatefulWidget {
   @override
@@ -18,6 +17,8 @@ class HomeTab extends StatefulWidget {
 class _HomeTabState extends State<HomeTab> {
   final DatabaseReference _postsRef = FirebaseDatabase.instance.ref('posts');
   final DatabaseReference _usersRef = FirebaseDatabase.instance.ref('users');
+  final DatabaseReference _flaggedPostsRef = FirebaseDatabase.instance.ref('flaggedPosts');
+
   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
 
   @override
@@ -51,8 +52,8 @@ class _HomeTabState extends State<HomeTab> {
             itemCount: postList.length,
             itemBuilder: (context, index) {
               Map<dynamic, dynamic> post = postList[index];
-              String postId = post['postId'] ?? ''; // Ensure postId is not null
-              String postOwnerId = post['userId'] ?? ''; // Ensure postOwnerId is not null
+              String postId = post['postId'] ?? '';
+              String postOwnerId = post['userId'] ?? '';
 
               return FutureBuilder(
                 future: _usersRef.child(postOwnerId).once(),
@@ -92,28 +93,34 @@ class _HomeTabState extends State<HomeTab> {
                                   ),
                                 ),
                                 Spacer(),
-                                if (currentUserId == postOwnerId) // Show Edit/Delete if the user owns the post
+                                if (currentUserId == postOwnerId)
                                   Row(
                                     children: [
                                       IconButton(
                                         icon: Icon(Icons.edit),
                                         onPressed: () {
-                                          _showEditPostDialog(postId, post['caption'] ?? '', post['postImageUrl'] ?? ''); // Pass current image URL
+                                          _showEditPostDialog(postId, post['caption'] ?? '', post['postImageUrl'] ?? '');
                                         },
                                       ),
                                       IconButton(
                                         icon: Icon(Icons.delete),
                                         onPressed: () {
-                                          _handleDelete(postId); // Delete post
+                                          _handleDelete(postId);
                                         },
                                       ),
                                     ],
+                                  ),
+                                if (currentUserId != postOwnerId) // Flag button for non-owners only
+                                  IconButton(
+                                    icon: Icon(Icons.flag_outlined, color: Colors.red),
+                                    onPressed: () {
+                                      _showFlagPostDialog(postId);
+                                    },
                                   ),
                               ],
                             ),
                           ),
                           SizedBox(height: 10),
-                          // Image loading with null check
                           post['postImageUrl'] != null && post['postImageUrl'].toString().isNotEmpty
                               ? Image.network(
                             post['postImageUrl'],
@@ -164,7 +171,7 @@ class _HomeTabState extends State<HomeTab> {
                                       },
                                     ),
                                     Text(
-                                      post['commentCount']?.toString() ?? '0', // Fallback to '0' if commentCount is null
+                                      post['commentCount']?.toString() ?? '0',
                                       style: TextStyle(fontSize: 16),
                                     ),
                                   ],
@@ -197,6 +204,48 @@ class _HomeTabState extends State<HomeTab> {
           );
         },
       ),
+    );
+  }
+  Future<void> _showFlagPostDialog(String postId) async {
+    TextEditingController reasonController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Flag Post'),
+          content: TextField(
+            controller: reasonController,
+            decoration: InputDecoration(labelText: 'Reason for flagging'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                await _flagPost(postId, reasonController.text);
+                Navigator.of(context).pop(); // Close dialog
+              },
+              child: Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Future<void> _flagPost(String postId, String reason) async {
+    await _flaggedPostsRef.child(postId).set({
+      'flaggedBy': currentUserId,
+      'reason': reason,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Post flagged successfully')),
     );
   }
 

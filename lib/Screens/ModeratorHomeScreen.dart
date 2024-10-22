@@ -38,15 +38,15 @@ class _ModeratorhomescreenState extends State<Moderatorhomescreen> {
             backgroundColor: Colors.black, // Background color for Home tab
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Followers',
+            icon: Icon(Icons.report),
+            label: 'Reports',
             backgroundColor: Colors.black, // Background color for Followers tab
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: 'Post',
-            backgroundColor: Colors.black, // Background color for Post tab
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.add),
+          //   label: 'Post',
+          //   backgroundColor: Colors.black, // Background color for Post tab
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
