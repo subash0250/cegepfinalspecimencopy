@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
-import 'home_tab.dart';
-import 'followers_tab.dart';
-import 'post_tab.dart';
-import 'profile_tab.dart';
-
-// class HomeScreen extends StatefulWidget {
+// import 'package:flutter/material.dart';
+// import 'home_tab.dart';
+// import 'followers_tab.dart';
+// import 'post_tab.dart';
+// import 'profile_tab.dart';
+//
+// // class HomeScreen extends StatefulWidget {
 //   @override
 //   _HomeScreenState createState() => _HomeScreenState();
 // }

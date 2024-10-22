@@ -19,16 +19,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   String? errorMessage;
 
-  String? _selectedRole; // Variable to hold selected role
-  final List<String> _roles = ['user', 'moderator']; // Available roles
+  String? _selectedRole;
+  final List<String> _roles = ['user', 'moderator','admin'];
 
   // Show loading dialog
   void _showLoadingSpinner(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false, // Prevent closing the dialog
+      barrierDismissible: false,
       builder: (context) => Center(
-        child: CircularProgressIndicator(), // Loading spinner
+        child: CircularProgressIndicator(),
       ),
     );
   }
@@ -66,8 +66,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             'userEmail': user.email,
             'userName': _nameController.text, // Username from text field
             'userProfileImage': 'https://firebasestorage.googleapis.com/v0/b/conectivity-app.appspot.com/o/profile_images%2Fdefault_profile.png?alt=media&token=1f649470-3a12-45a3-90b7-eb045a37939c', // Placeholder image URL
-            'userRole': _selectedRole, // Save the selected role
-            'userStatus': 'active', // Default status for users
+            'userRole': _selectedRole,
+            'userStatus': 'active', 
           });
           // Hide the loading spinner
           _hideLoadingSpinner(context);

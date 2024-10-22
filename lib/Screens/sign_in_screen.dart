@@ -1,5 +1,10 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutterspecimencopy/Screens/ModeratorHomeScreen.dart';
+
+import '../screens/home_screen.dart';
+import 'AdminHomeScreen.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -8,20 +13,23 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   String errorMessage = '';
   String emailError = '';
   String passwordError = '';
 
 
-  // Show loading dialog
+
   void _showLoadingSpinner(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false, // Prevent closing the dialog
+      barrierDismissible: false,
       builder: (context) => Center(
-        child: CircularProgressIndicator(), // Loading spinner
+        child: CircularProgressIndicator(),
       ),
     );
   }
@@ -65,17 +73,46 @@ class _SignInScreenState extends State<SignInScreen> {
     // Show loading spinner
     _showLoadingSpinner(context);
     try {
-      await _auth.signInWithEmailAndPassword(
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-      // Hide the loading spinner
-      _hideLoadingSpinner(context);
-      // Navigate to home screen after successful sign-in
-      Navigator.pushReplacementNamed(context, '/home');
+      User? user = userCredential.user;
+      if (user != null) {
+        await _navigateBasedOnRole(user.uid);
+      }
+
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message ?? 'An error occurred. Please try again.';
+      });
+    }
+  }
+
+  Future<void> _navigateBasedOnRole(String userId) async {
+    final DataSnapshot snapshot = await _dbRef.child('users/$userId').get();
+
+    if (snapshot.exists) {
+      final role = snapshot.child('userRole').value as String;
+      if (role == 'admin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Adminhomescreen()),
+        );
+      } else if (role == 'moderator') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Moderatorhomescreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+      }
+    } else {
+      setState(() {
+        errorMessage = 'User role not found. Please contact support.';
       });
     }
   }
