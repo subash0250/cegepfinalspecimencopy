@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutterspecimencopy/Screens/PostsScreen_Admin.dart';
+import 'package:flutterspecimencopy/Screens/UserManagementScreen_Admin.dart';
+import '../screens/ContentModerationScreen_Admin.dart';
 
-
-class AdminhomeTab extends StatefulWidget {
+class AdminHomeTab extends StatefulWidget {
   @override
-  State<AdminhomeTab> createState() => _AdminhomeTabState();
+  State<AdminHomeTab> createState() => _AdminHomeTabState();
 }
 
-class _AdminhomeTabState extends State<AdminhomeTab> {
+class _AdminHomeTabState extends State<AdminHomeTab> {
   final DatabaseReference _dbRef = FirebaseDatabase.instance.ref();
 
   int activeUsers = 0;
@@ -54,8 +56,6 @@ class _AdminhomeTabState extends State<AdminhomeTab> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16.0),
-
-
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
@@ -63,38 +63,74 @@ class _AdminhomeTabState extends State<AdminhomeTab> {
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
               children: [
-                _buildSummaryCard('Active Users', '$activeUsers', Icons.people),
-                _buildSummaryCard('Total Posts', '$totalPosts', Icons.post_add),
-                _buildSummaryCard('Flagged Content', '$flaggedContent', Icons.flag),
+                _buildSummaryCard(
+                  title: 'Active Users',
+                  value: '$activeUsers',
+                  icon: Icons.people,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => UserManagementTab()),
+                    );
+                  },
+                ),
+                _buildSummaryCard(
+                  title: 'Total Posts',
+                  value: '$totalPosts',
+                  icon: Icons.post_add,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PostsScreenAdmin()),
+                    );
+                  },
+                ),
+                _buildSummaryCard(
+                  title: 'Flagged Content',
+                  value: '$flaggedContent',
+                  icon: Icons.flag,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ContentModerationScreen()),
+                    );
+                  },
+                ),
               ],
             ),
             const SizedBox(height: 24.0),
-
           ],
         ),
       ),
     );
   }
 
-
-  Widget _buildSummaryCard(String title, String value, IconData icon) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: Colors.blueAccent),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(title, style: TextStyle(fontSize: 16)),
-          ],
+  Widget _buildSummaryCard({
+    required String title,
+    required String value,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 40, color: Colors.blueAccent),
+              const SizedBox(height: 8),
+              Text(
+                value,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(title, style: TextStyle(fontSize: 16)),
+            ],
+          ),
         ),
       ),
     );

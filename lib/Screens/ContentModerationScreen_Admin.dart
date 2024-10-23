@@ -3,7 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 
 class ContentModerationScreen extends StatefulWidget {
   @override
-  _ContentModerationScreenState createState() => _ContentModerationScreenState();
+  State<ContentModerationScreen> createState() => _ContentModerationScreenState();
+
 }
 
 class _ContentModerationScreenState extends State<ContentModerationScreen> {
@@ -16,7 +17,7 @@ class _ContentModerationScreenState extends State<ContentModerationScreen> {
     _fetchFlaggedPosts();
   }
 
-  // Fetch flagged posts from Firebase Realtime Database
+
   Future<void> _fetchFlaggedPosts() async {
     DatabaseEvent event = await _flaggedPostsRef.once();
     if (event.snapshot.exists) {
@@ -35,10 +36,9 @@ class _ContentModerationScreenState extends State<ContentModerationScreen> {
     }
   }
 
-  // Function to delete a flagged post from the flagged posts table
+
   Future<void> _deleteFlaggedPost(String flaggedPostID) async {
     await _flaggedPostsRef.child(flaggedPostID).remove();
-    // Optionally, refresh the list after deletion
     _fetchFlaggedPosts();
   }
 

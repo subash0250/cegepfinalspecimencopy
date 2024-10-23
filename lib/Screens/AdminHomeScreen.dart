@@ -17,7 +17,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
   int _selectedIndex = 0;
 
   static List<Widget> _widgetOptions = <Widget>[
-    AdminhomeTab(),
+    AdminHomeTab(),
     UserManagementTab(),
     ContentModerationScreen(),
     ProfileTab(),

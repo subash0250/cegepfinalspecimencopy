@@ -1,6 +1,9 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'Screens/AdminHomeScreen.dart';
+import 'Screens/ModeratorHomeScreen.dart';
 import 'screens/sign_in_screen.dart';
 import 'screens/sign_up_screen.dart';
 import 'screens/home_screen.dart';
@@ -12,7 +15,6 @@ void main() async {
   try {
     // Initialize Firebase
     await Firebase.initializeApp();
-    print("Firebase Initialized"); // Debugging statement
   } catch (e) {
     print("Firebase Initialization Error: $e");
   }
@@ -28,7 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.purple),
       initialRoute: '/',
       routes: {
-        '/': (context) => AuthWrapper(), // Use AuthWrapper for authentication flow
+        '/': (context) => AuthWrapper(),
         '/sign-in': (context) => SignInScreen(),
         '/sign-up': (context) => SignUpScreen(),
         '/home': (context) => HomeScreen(),
@@ -37,22 +39,53 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class AuthWrapper extends StatelessWidget {
+  final DatabaseReference _userRef = FirebaseDatabase.instance.ref('users');
+
+  Future<String?> _getUserRole(String uid) async {
+    try {
+      final snapshot = await _userRef.child(uid).once();
+      if (snapshot.snapshot.exists) {
+        final userData = snapshot.snapshot.value as Map<dynamic, dynamic>;
+        return userData['userRole'] as String?;
+      }
+    } catch (e) {
+      print("Error fetching user role: $e");
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        // Debugging statement
-        print("Auth state changed: ${snapshot.connectionState}, user: ${snapshot.data}");
-
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return SplashScreen(); // Show splash screen while loading
+          return SplashScreen();
         } else if (snapshot.hasData) {
-          return HomeScreen(); // User is signed in
+          final User? user = snapshot.data;
+          return FutureBuilder<String?>(
+            future: _getUserRole(user!.uid),
+            builder: (context, roleSnapshot) {
+              if (roleSnapshot.connectionState == ConnectionState.waiting) {
+                return SplashScreen();
+              } else if (roleSnapshot.hasData) {
+                switch (roleSnapshot.data) {
+                  case 'admin':
+                    return AdminHomeScreen();
+                  case 'moderator':
+                    return Moderatorhomescreen();
+                  default:
+                    return HomeScreen();
+                }
+              }
+              else {
+                return SignInScreen();
+              }
+            },
+          );
         } else {
-          return SignInScreen(); // User is not signed in
+          return SignInScreen();
         }
       },
     );
