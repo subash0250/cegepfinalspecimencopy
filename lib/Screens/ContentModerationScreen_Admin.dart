@@ -3,12 +3,16 @@ import 'package:firebase_database/firebase_database.dart';
 
 class ContentModerationScreen extends StatefulWidget {
   @override
-  State<ContentModerationScreen> createState() => _ContentModerationScreenState();
-
+  State<ContentModerationScreen> createState() =>
+      _ContentModerationScreenState();
 }
 
 class _ContentModerationScreenState extends State<ContentModerationScreen> {
-  final DatabaseReference _flaggedPostsRef = FirebaseDatabase.instance.ref('flaggedPosts');
+  final DatabaseReference _flaggedPostsRef =
+  FirebaseDatabase.instance.ref().child('flaggedPosts');
+  final DatabaseReference _usersRef =
+  FirebaseDatabase.instance.ref().child('users');
+
   List<FlaggedPost> _flaggedPosts = [];
 
   @override
@@ -17,27 +21,92 @@ class _ContentModerationScreenState extends State<ContentModerationScreen> {
     _fetchFlaggedPosts();
   }
 
-
   Future<void> _fetchFlaggedPosts() async {
-    DatabaseEvent event = await _flaggedPostsRef.once();
-    if (event.snapshot.exists) {
-      final Map<dynamic, dynamic> flaggedPostsMap = event.snapshot.value as Map<dynamic, dynamic>;
-      setState(() {
-        _flaggedPosts = flaggedPostsMap.entries.map((entry) {
-          final value = entry.value;
-          return FlaggedPost(
-            flaggedPostID: entry.key,
-            flaggedBy: value['flaggedBy'],
-            reason: value['reason'],
-            timestamp: DateTime.fromMillisecondsSinceEpoch(value['timestamp']),
-          );
-        }).toList();
-      });
+    try {
+      DatabaseEvent event = await _flaggedPostsRef.once();
+      if (event.snapshot.exists) {
+        final data = event.snapshot.value as Map<dynamic, dynamic>?;
+
+        if (data != null) {
+          List<Future<FlaggedPost>> postsFuture = data.entries.map((entry) async {
+            final value = entry.value as Map<dynamic, dynamic>;
+
+            // Get flaggedBy ID
+            String flaggedByID = value['flaggedBy'] ?? 'Unknown';
+
+            // Fetch the user's name from the users table
+            String flaggedByName = await _fetchUserName(flaggedByID);
+
+            // Safely parse timestamp
+            DateTime timestamp = DateTime.now();
+            if (value['timestamp'] != null) {
+              try {
+                timestamp = DateTime.parse(value['timestamp']);
+              } catch (e) {
+                print('Error parsing timestamp: $e');
+              }
+            }
+
+            return FlaggedPost(
+              flaggedPostID: entry.key,
+              flaggedBy: flaggedByName,
+              reason: value['reason'] ?? 'No reason provided',
+              timestamp: timestamp,
+            );
+          }).toList();
+
+          // Wait for all posts to be fetched
+          List<FlaggedPost> posts = await Future.wait(postsFuture);
+
+          setState(() {
+            _flaggedPosts = posts;
+          });
+        } else {
+          print('No data found in the snapshot.');
+        }
+      } else {
+        print('No flagged posts exist.');
+      }
+    } catch (e) {
+      print('Error fetching flagged posts: $e');
     }
   }
 
-
+  Future<String> _fetchUserName(String userID) async {
+    try {
+      DatabaseEvent userEvent = await _usersRef.child(userID).once();
+      if (userEvent.snapshot.exists) {
+        final userData = userEvent.snapshot.value as Map<dynamic, dynamic>;
+        return userData['userName'] ?? 'Unknown User';
+      } else {
+        return 'Unknown User';
+      }
+    } catch (e) {
+      print('Error fetching user name: $e');
+      return 'Unknown User';
+    }
+  }
   Future<void> _deleteFlaggedPost(String flaggedPostID) async {
+    try {
+      DatabaseEvent event = await _flaggedPostsRef.child(flaggedPostID).once();
+      if (event.snapshot.exists) {
+        final data = event.snapshot.value as Map<dynamic, dynamic>;
+        String postID = data['postID'];
+
+        await _flaggedPostsRef.child(flaggedPostID).remove();
+        await FirebaseDatabase.instance.ref('posts').child(postID).remove();
+
+        _fetchFlaggedPosts();
+
+        print('Successfully deleted post $postID from both tables.');
+      } else {
+        print('Flagged post not found.');
+      }
+    } catch (e) {
+      print('Error deleting post: $e');
+    }
+  }
+  Future<void> _VerifiedFlaggedPost(String flaggedPostID) async {
     await _flaggedPostsRef.child(flaggedPostID).remove();
     _fetchFlaggedPosts();
   }
@@ -57,20 +126,36 @@ class _ContentModerationScreenState extends State<ContentModerationScreen> {
             child: Padding(
               padding: EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Flagged By: ${flaggedPost.flaggedBy}'),
-                  Text('Reason: ${flaggedPost.reason}'),
-                  Text('Timestamp: ${flaggedPost.timestamp}'),
-                  SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      _deleteFlaggedPost(flaggedPost.flaggedPostID);
-                    },
-                    child: Text('Delete Post'),
-                  ),
-                ],
-              ),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Flagged By: ${flaggedPost.flaggedBy}'),
+                Text('Reason: ${flaggedPost.reason}'),
+                Text('Timestamp: ${flaggedPost.timestamp}'),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _deleteFlaggedPost(flaggedPost.flaggedPostID);
+                        },
+                        child: Text('Delete Post'),
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          _VerifiedFlaggedPost(flaggedPost.flaggedPostID);
+                        },
+                        child: Text('Verified Post'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
             ),
           );
         },

@@ -96,7 +96,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (role == 'admin') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => AdminHomeScreen()),
+          MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
         );
       } else if (role == 'moderator') {
         Navigator.pushReplacement(
