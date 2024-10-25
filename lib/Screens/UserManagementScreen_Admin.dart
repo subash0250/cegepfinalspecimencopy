@@ -130,10 +130,25 @@ class _UserManagementTabState extends State<UserManagementTab> {
   }
 
   Future<void> _removeUser(String userId) async {
-    await _usersRef.child(userId).remove();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('User removed successfully')),
-    );
+    try {
+
+      await _usersRef.child(userId).remove();
+
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null && user.uid == userId) {
+        await user.delete();
+      } else {
+        throw Exception("Cannot delete user without authentication.");
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('User removed successfully')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
   }
 
   void _viewUserHistory(String userId) {

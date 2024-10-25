@@ -13,7 +13,6 @@ import 'screens/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
-    // Initialize Firebase
     await Firebase.initializeApp();
   } catch (e) {
     print("Firebase Initialization Error: $e");
@@ -28,9 +27,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Connectify',
       theme: ThemeData(primarySwatch: Colors.purple),
-      initialRoute: '/',
+      initialRoute: '/splash',
       routes: {
-        '/': (context) => AuthWrapper(),
+        '/splash': (context) => SplashScreen(),
+        '/auth-wrapper': (context) => AuthWrapper(),
         '/sign-in': (context) => SignInScreen(),
         '/sign-up': (context) => SignUpScreen(),
         '/home': (context) => HomeScreen(),
@@ -60,9 +60,7 @@ class AuthWrapper extends StatelessWidget {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return SplashScreen();
-        } else if (snapshot.hasData) {
+          if (snapshot.hasData) {
           final User? user = snapshot.data;
           return FutureBuilder<String?>(
             future: _getUserRole(user!.uid),
