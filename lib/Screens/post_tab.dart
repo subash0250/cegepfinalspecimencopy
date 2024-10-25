@@ -5,8 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
-import 'package:geocoding/geocoding.dart';
-import 'location_search.dart'; // Import the location search screen
+import 'location_search.dart';
 
 class PostTab extends StatefulWidget {
   @override
@@ -22,9 +21,9 @@ class _PostTabState extends State<PostTab> {
 
   File? _selectedImage;
   bool _isLoading = false;
-  String? _locationName; // Variable to store location name (city)
-  double? _latitude; // Variable to store latitude
-  double? _longitude; // Variable to store longitude
+  String? _locationName;
+  double? _latitude;
+  double? _longitude;
 
   Future<void> _pickImage() async {
     final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -51,15 +50,15 @@ class _PostTabState extends State<PostTab> {
       User? currentUser = _auth.currentUser;
       if (currentUser != null) {
         String userId = currentUser.uid;
-        String postId = Uuid().v4(); // Generate a unique postId
+        String postId = Uuid().v4();
         String fileName = 'posts/$postId.jpg';
 
-        // Upload image to Firebase Storage
+
         UploadTask uploadTask = _storage.ref(fileName).putFile(_selectedImage!);
         TaskSnapshot taskSnapshot = await uploadTask;
         String downloadUrl = await taskSnapshot.ref.getDownloadURL();
 
-        // Save post data to Firebase Realtime Database
+
         DatabaseReference postRef = _database.ref('posts/$postId');
         await postRef.set({
           'postId': postId,
@@ -67,23 +66,23 @@ class _PostTabState extends State<PostTab> {
           'postImageUrl': downloadUrl,
           'timestamp': DateTime.now().toIso8601String(),
           'userId': userId,
-          'locationName': _locationName, // Save city name
-          'latitude': _latitude, // Save latitude
-          'longitude': _longitude, // Save longitude
+          'locationName': _locationName,
+          'latitude': _latitude,
+          'longitude': _longitude,
         });
 
-        // Success
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Post uploaded successfully! 456')),
         );
 
-        // Clear fields
+
         _captionController.clear();
         setState(() {
           _selectedImage = null;
-          _locationName = null; // Clear location name
-          _latitude = null; // Clear latitude
-          _longitude = null; // Clear longitude
+          _locationName = null;
+          _latitude = null;
+          _longitude = null;
         });
 
         Navigator.pushReplacementNamed(context, '/home');
@@ -114,7 +113,7 @@ class _PostTabState extends State<PostTab> {
       appBar: AppBar(
         title: Text(
           'Create Post',
-          style: TextStyle(color: Colors.white), // Set text color to white
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.black,
         centerTitle: true,
@@ -148,7 +147,6 @@ class _PostTabState extends State<PostTab> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigate to location search screen
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -159,7 +157,7 @@ class _PostTabState extends State<PostTab> {
               child: Text('Tag Location'),
             ),
             SizedBox(height: 20),
-            if (_locationName != null) // Display the location name (city) if available
+            if (_locationName != null)
               Text(
                 'Location: $_locationName',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

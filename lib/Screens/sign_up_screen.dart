@@ -22,7 +22,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _selectedRole;
   final List<String> _roles = ['user', 'moderator','admin'];
 
-  // Show loading dialog
   void _showLoadingSpinner(BuildContext context) {
     showDialog(
       context: context,
@@ -33,7 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  // Dismiss loading dialog
+
   void _hideLoadingSpinner(BuildContext context) {
     Navigator.of(context).pop();
   }
@@ -44,11 +43,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         errorMessage = null;
       });
 
-      // Show loading spinner
+
       _showLoadingSpinner(context);
 
       try {
-        // Create a user with email and password
+
         UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
@@ -59,7 +58,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         if (user != null) {
           String userId = user.uid;
 
-          // Define the additional user fields including the role
+
           await _database.ref('users/$userId').set({
             'userBio': _bioController.text,
             'userCreatedAt': DateTime.now().toString(),
@@ -88,7 +87,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  // Email validation
+
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter an email';
@@ -100,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return null;
   }
 
-  // Password validation
+
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter a password';
@@ -111,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return null;
   }
 
-  // Name validation
+
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your name';
@@ -159,7 +158,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               SizedBox(height: 40),
 
-              // Name TextField
+
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
@@ -171,7 +170,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               SizedBox(height: 20),
 
-              // Email TextField
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -184,7 +182,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               SizedBox(height: 20),
 
-              // Password TextField
+
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
@@ -197,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               SizedBox(height: 20),
 
-              // Bio TextField (optional)
+
               TextFormField(
                 controller: _bioController,
                 decoration: InputDecoration(
@@ -209,7 +207,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               SizedBox(height: 20),
 
-              // Role Dropdown
+
               DropdownButtonFormField<String>(
                 value: _selectedRole,
                 decoration: InputDecoration(
@@ -236,7 +234,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               SizedBox(height: 40),
 
-              // Sign Up Button
+
               ElevatedButton(
                 onPressed: _signUp,
                 style: ElevatedButton.styleFrom(
@@ -265,7 +263,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ],
 
-              SizedBox(height: 30), // Space between button and login prompt
+              SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

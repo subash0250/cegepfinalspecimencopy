@@ -42,36 +42,28 @@ class _FollowersFragmentState extends State<FollowersFragment> {
   }
 
   void _followUser(String targetUserId) async {
-    // Update following list for current user
     _databaseRef.child('users/$currentUserId/following/$targetUserId').set(true);
-
-    // Update followers list for the target user
     _databaseRef.child('users/$targetUserId/followers/$currentUserId').set(true);
 
-    // Increment the following count of the current user
     DatabaseReference followingCountRef = _databaseRef.child('users/$currentUserId/followingCount');
     int followingCount = (await followingCountRef.get()).value as int? ?? 0;
     followingCountRef.set(followingCount + 1);
 
-    // Increment the followers count of the target user
     DatabaseReference followersCountRef = _databaseRef.child('users/$targetUserId/followersCount');
     int followersCount = (await followersCountRef.get()).value as int? ?? 0;
     followersCountRef.set(followersCount + 1);
   }
 
   void _unfollowUser(String targetUserId) async {
-    // Remove from following list of current user
-    _databaseRef.child('users/$currentUserId/following/$targetUserId').remove();
 
-    // Remove from followers list of the target user
+    _databaseRef.child('users/$currentUserId/following/$targetUserId').remove();
     _databaseRef.child('users/$targetUserId/followers/$currentUserId').remove();
 
-    // Decrement the following count of the current user
     DatabaseReference followingCountRef = _databaseRef.child('users/$currentUserId/followingCount');
     int followingCount = (await followingCountRef.get()).value as int? ?? 0;
     followingCountRef.set(followingCount - 1);
 
-    // Decrement the followers count of the target user
+
     DatabaseReference followersCountRef = _databaseRef.child('users/$targetUserId/followersCount');
     int followersCount = (await followersCountRef.get()).value as int? ?? 0;
     followersCountRef.set(followersCount - 1);
@@ -97,7 +89,7 @@ class _FollowersFragmentState extends State<FollowersFragment> {
                 String userName = users[index]['userName'];
 
                 if (userId == currentUserId) {
-                  return Container(); // Don't display current user
+                  return Container();
                 }
 
                 return ListTile(
@@ -116,7 +108,7 @@ class _FollowersFragmentState extends State<FollowersFragment> {
                           } else {
                             _followUser(userId);
                           }
-                          setState(() {}); // Update button state
+                          setState(() {});
                         },
                         child: Text(isFollowing ? 'Unfollow' : 'Follow'),
                       );

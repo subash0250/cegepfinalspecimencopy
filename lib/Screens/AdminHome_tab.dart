@@ -22,7 +22,7 @@ class _AdminHomeTabState extends State<AdminHomeTab> {
     fetchDashboardData();
   }
 
-  // Fetch data from Firebase
+
   Future<void> fetchDashboardData() async {
     try {
       final activeUsersSnapshot = await _dbRef.child('users').once();

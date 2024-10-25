@@ -22,16 +22,16 @@ class _ProfileTabState extends State<ProfileTab> {
   String? userEmail;
   String? userId;
   int postCount = 0;
-  int followersCount = 0; // Initialize followers count
-  int followingCount = 0; // Initialize following count
+  int followersCount = 0;
+  int followingCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
     _loadUserPostsCount();
-    _loadFollowersCount(); // Load followers count when the screen initializes
-    _loadFollowingCount(); // Load following count when the screen initializes
+    _loadFollowersCount();
+    _loadFollowingCount();
   }
 
   void _loadUserData() async {
@@ -82,7 +82,6 @@ class _ProfileTabState extends State<ProfileTab> {
     }
   }
 
-  // Load followers count from Firebase
   void _loadFollowersCount() async {
     User? currentUser = _auth.currentUser;
 
@@ -97,7 +96,7 @@ class _ProfileTabState extends State<ProfileTab> {
           });
         } else {
           setState(() {
-            followersCount = 0; // No followers found, set count to 0
+            followersCount = 0;
           });
         }
       }, onError: (error) {
@@ -106,7 +105,6 @@ class _ProfileTabState extends State<ProfileTab> {
     }
   }
 
-  // Load following count from Firebase
   void _loadFollowingCount() async {
     User? currentUser = _auth.currentUser;
 
@@ -121,7 +119,7 @@ class _ProfileTabState extends State<ProfileTab> {
           });
         } else {
           setState(() {
-            followingCount = 0; // No following found, set count to 0
+            followingCount = 0;
           });
         }
       }, onError: (error) {
@@ -202,11 +200,11 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                     );
                   },
-                  child: _buildStatColumn('Followers', followersCount.toString()), // Make followers clickable
+                  child: _buildStatColumn('Followers', followersCount.toString()),
                 ),
                 GestureDetector(
                   onTap: () {
-                    // Navigate to FollowingScreen
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -214,7 +212,7 @@ class _ProfileTabState extends State<ProfileTab> {
                       ),
                     );
                   },
-                  child: _buildStatColumn('Following', followingCount.toString()), // Make following clickable
+                  child: _buildStatColumn('Following', followingCount.toString()),
                 ),
               ],
             ),
@@ -227,7 +225,6 @@ class _ProfileTabState extends State<ProfileTab> {
                     context,
                     MaterialPageRoute(builder: (context) => EditProfileScreen()),
                   ).then((_) {
-                    // Trigger data reload after returning from EditProfileScreen
                     _loadUserData();
                   });
                 },

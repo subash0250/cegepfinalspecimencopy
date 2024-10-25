@@ -18,18 +18,17 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   List<Map<dynamic, dynamic>> userPosts = [];
 
-  // Show loading dialog
+
   void _showLoadingSpinner(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false, // Prevent closing the dialog
+      barrierDismissible: false,
       builder: (context) => Center(
-        child: CircularProgressIndicator(), // Loading spinner
+        child: CircularProgressIndicator(),
       ),
     );
   }
 
-  // Dismiss loading dialog
   void _hideLoadingSpinner(BuildContext context) {
     Navigator.of(context).pop();
   }
@@ -40,7 +39,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     _loadUserPosts();
   }
 
-  // Load user's posts
+
   void _loadUserPosts() {
     DatabaseReference postsRef = _database.ref('posts');
 
@@ -56,7 +55,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     });
   }
 
-  // Pick image from gallery
+
   Future<File?> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
@@ -67,7 +66,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     return null;
   }
 
-  // Upload the image to Firebase Storage and return the download URL
+
   Future<String?> _uploadImage(File image, String postId) async {
     _showLoadingSpinner(context);
 
@@ -84,7 +83,6 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     }
   }
 
-  // Edit post (caption and postImageUrl)
   void _editPost(String postId, String currentCaption, String currentImageUrl) async {
     TextEditingController captionController = TextEditingController(text: currentCaption);
     TextEditingController imageUrlController = TextEditingController(text: currentImageUrl);
@@ -107,7 +105,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
                 onPressed: () async {
                   newImageFile = await _pickImage(); // Pick new image
                   if (newImageFile != null) {
-                    imageUrlController.text = 'Image selected. Will be uploaded.'; // Show placeholder text
+                    imageUrlController.text = 'Image selected. Will be uploaded.';
                   }
                 },
                 child: Text('Pick New Image'),
@@ -125,16 +123,16 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
               onPressed: () async {
                 String? newImageUrl;
 
-                // If a new image was selected, upload it to Firebase Storage
+
                 if (newImageFile != null) {
                   newImageUrl = await _uploadImage(newImageFile!, postId);
                 }
 
-                // Update Firebase Realtime Database with the new caption and (optional) image URL
+
                 DatabaseReference postRef = _database.ref('posts/$postId');
                 postRef.update({
                   'caption': captionController.text,
-                  'postImageUrl': newImageUrl ?? currentImageUrl, // Update URL only if a new one was uploaded
+                  'postImageUrl': newImageUrl ?? currentImageUrl,
                 }).then((_) {
                   setState(() {
                     for (var post in userPosts) {
@@ -164,7 +162,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     );
   }
 
-  // Delete a post
+
   void _deletePost(String postId) {
     DatabaseReference postRef = _database.ref('posts/$postId');
     postRef.remove().then((_) {
@@ -193,7 +191,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
           Map<dynamic, dynamic> post = userPosts[index];
           return ListTile(
             title: Text(post['caption']),
-            // subtitle: Text(post['timestamp'].toString()), // You can format timestamp here
+
             leading: post['postImageUrl'] != null
                 ? Image.network(post['postImageUrl'])
                 : SizedBox.shrink(),

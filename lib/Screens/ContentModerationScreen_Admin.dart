@@ -31,13 +31,9 @@ class _ContentModerationScreenState extends State<ContentModerationScreen> {
           List<Future<FlaggedPost>> postsFuture = data.entries.map((entry) async {
             final value = entry.value as Map<dynamic, dynamic>;
 
-            // Get flaggedBy ID
             String flaggedByID = value['flaggedBy'] ?? 'Unknown';
-
-            // Fetch the user's name from the users table
             String flaggedByName = await _fetchUserName(flaggedByID);
 
-            // Safely parse timestamp
             DateTime timestamp = DateTime.now();
             if (value['timestamp'] != null) {
               try {
@@ -54,10 +50,7 @@ class _ContentModerationScreenState extends State<ContentModerationScreen> {
               timestamp: timestamp,
             );
           }).toList();
-
-          // Wait for all posts to be fetched
           List<FlaggedPost> posts = await Future.wait(postsFuture);
-
           setState(() {
             _flaggedPosts = posts;
           });
@@ -88,24 +81,36 @@ class _ContentModerationScreenState extends State<ContentModerationScreen> {
   }
   Future<void> _deleteFlaggedPost(String flaggedPostID) async {
     try {
+      // Retrieve the flagged post entry.
       DatabaseEvent event = await _flaggedPostsRef.child(flaggedPostID).once();
+
       if (event.snapshot.exists) {
-        final data = event.snapshot.value as Map<dynamic, dynamic>;
-        String postID = data['postID'];
+        final data = event.snapshot.value as Map<dynamic, dynamic>?;
 
+        // Extract the postID from the flagged post entry.
+        String? postID = data?['postID'] as String?;
+
+        // Delete the flagged post entry from the 'flaggedPosts' table.
         await _flaggedPostsRef.child(flaggedPostID).remove();
-        await FirebaseDatabase.instance.ref('posts').child(postID).remove();
 
+        if (postID != null && postID.isNotEmpty) {
+          // Delete the corresponding post from the 'posts' table.
+          await FirebaseDatabase.instance.ref('posts').child(postID).remove();
+          print('Successfully deleted post $postID from both tables.');
+        } else {
+          print('PostID not found. Only deleted from flaggedPosts.');
+        }
+
+        // Refresh the list of flagged posts.
         _fetchFlaggedPosts();
-
-        print('Successfully deleted post $postID from both tables.');
       } else {
         print('Flagged post not found.');
       }
     } catch (e) {
-      print('Error deleting post: $e');
+      print('Error deleting flagged post: $e');
     }
   }
+
   Future<void> _VerifiedFlaggedPost(String flaggedPostID) async {
     await _flaggedPostsRef.child(flaggedPostID).remove();
     _fetchFlaggedPosts();

@@ -35,12 +35,12 @@ class _ModeratorhomescreenState extends State<Moderatorhomescreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'moderator',
-            backgroundColor: Colors.black, // Background color for Home tab
+            backgroundColor: Colors.black,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.report),
             label: 'Reports',
-            backgroundColor: Colors.black, // Background color for Followers tab
+            backgroundColor: Colors.black,
           ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.add),
@@ -50,14 +50,14 @@ class _ModeratorhomescreenState extends State<Moderatorhomescreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',
-            backgroundColor: Colors.black, // Background color for Profile tab
+            backgroundColor: Colors.black,
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white, // Highlight color for selected item
-        unselectedItemColor: Colors.grey[600], // Color for unselected items
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.grey[600],
         onTap: _onItemTapped,
-        type: BottomNavigationBarType.shifting, // To allow different tab background colors
+        type: BottomNavigationBarType.shifting,
       ),
     );
   }

@@ -56,7 +56,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       appBar: AppBar(
         title: Text(
           'Forgot Password',
-          style: TextStyle(color: Colors.white), // Text color white
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.black,
         centerTitle: true,
@@ -65,7 +65,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
         child: Form(
-          key: _formKey, // Wrap form in a Form widget for validation
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -87,7 +87,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               SizedBox(height: 40),
 
-              // Email TextField with validation
+
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -96,7 +96,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.email),
                 ),
-                validator: _validateEmail, // Attach email validation
+                validator: _validateEmail,
               ),
               SizedBox(height: 30),
 
@@ -140,7 +140,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               // Back to Sign In link
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // Navigates back to Sign In screen
+                  Navigator.pop(context);
                 },
                 child: Text(
                   'Back to Sign In',

@@ -22,14 +22,12 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Logo or image
             Image.asset(
               'assets/images/logo.jpeg',
               height: 100,
             ),
             SizedBox(height: 20),
 
-            // App name or welcome text
             Text(
               'Welcome to Connectify',
               style: TextStyle(
@@ -39,8 +37,6 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             SizedBox(height: 40),
-
-            // Loading indicator
             CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
             ),

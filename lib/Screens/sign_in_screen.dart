@@ -33,10 +33,6 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  // Dismiss loading dialog
-  void _hideLoadingSpinner(BuildContext context) {
-    Navigator.of(context).pop();
-  }
 
   Future<void> _signInWithEmailPassword() async {
     setState(() {
@@ -69,7 +65,7 @@ class _SignInScreenState extends State<SignInScreen> {
       });
       return;
     }
-    // Show loading spinner
+
     _showLoadingSpinner(context);
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -116,7 +112,6 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  // Email validation using RegExp
   bool _isValidEmail(String email) {
     final RegExp emailRegex = RegExp(r"^[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
     return emailRegex.hasMatch(email);
@@ -161,7 +156,6 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               SizedBox(height: 40),
 
-              // Email TextField with error message
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -174,7 +168,6 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               SizedBox(height: 20),
 
-              // Password TextField with error message
               TextField(
                 controller: _passwordController,
                 decoration: InputDecoration(
@@ -186,7 +179,6 @@ class _SignInScreenState extends State<SignInScreen> {
                 obscureText: true,
               ),
 
-              // Forgot Password aligned to the right below the password field
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
@@ -233,7 +225,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ],
 
-              SizedBox(height: 20), // Space between button and links
+              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

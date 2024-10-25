@@ -120,7 +120,7 @@ class _PostsScreenAdminState extends State<PostsScreenAdmin> {
                                       },
                                     ),
                                     Text(
-                                      post['likeCount']?.toString() ?? '0', // Check for null likeCount
+                                      post['likeCount']?.toString() ?? '0',
                                       style: TextStyle(fontSize: 16),
                                     ),
                                   ],
@@ -147,7 +147,7 @@ class _PostsScreenAdminState extends State<PostsScreenAdmin> {
                                 IconButton(
                                   icon: Icon(Icons.share_outlined),
                                   onPressed: () {
-                                    _handleShare(post['postImageUrl'] ?? ''); // Safeguard postImageUrl for null
+                                    _handleShare(post['postImageUrl'] ?? '');
                                   },
                                 ),
                               ],
@@ -156,7 +156,7 @@ class _PostsScreenAdminState extends State<PostsScreenAdmin> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              post['caption'] ?? '', // Safeguard caption for null
+                              post['caption'] ?? '',
                               style: TextStyle(
                                 fontSize: 16,
                               ),

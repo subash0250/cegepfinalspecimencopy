@@ -14,15 +14,15 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
   List<Placemark> _places = [];
   final TextEditingController _searchController = TextEditingController();
   bool _isLoading = false;
-  bool _noLocationFound = false; // Flag for no location found
+  bool _noLocationFound = false;
 
   Future<void> _searchLocation(String query) async {
     if (query.isEmpty) return;
 
     setState(() {
-      _isLoading = true; // Start loading
-      _places = []; // Clear previous results
-      _noLocationFound = false; // Reset no location found flag
+      _isLoading = true;
+      _places = [];
+      _noLocationFound = false;
     });
 
     try {
@@ -32,17 +32,16 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
 
       setState(() {
         _places = placemarks;
-        _noLocationFound = _places.isEmpty; // Set flag if no places found
+        _noLocationFound = _places.isEmpty;
       });
     } catch (e) {
-      // Handle error (e.g., no results found)
       print('Error: $e');
       setState(() {
-        _noLocationFound = true; // Set flag if error occurs
+        _noLocationFound = true;
       });
     } finally {
       setState(() {
-        _isLoading = false; // Stop loading
+        _isLoading = false;
       });
     }
   }
@@ -94,14 +93,12 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                         subtitle: Text(place.country ?? 'Unknown'),
                         trailing: Icon(Icons.arrow_forward_ios, color: Colors.black),
                         onTap: () async {
-                          // Get coordinates of the selected place
                           List<Location> locations = await locationFromAddress(
                             '${place.locality}, ${place.country}',
                           );
                           final latitude = locations.first.latitude;
                           final longitude = locations.first.longitude;
 
-                          // Call the onSelectLocation function with the selected values
                           widget.onSelectLocation(
                             place.locality ?? 'Unknown',
                             latitude,

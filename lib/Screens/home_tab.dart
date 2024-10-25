@@ -110,7 +110,7 @@ class _HomeTabState extends State<HomeTab> {
                                       ),
                                     ],
                                   ),
-                                if (currentUserId != postOwnerId) // Flag button for non-owners only
+                                if (currentUserId != postOwnerId)
                                   IconButton(
                                     icon: Icon(Icons.flag_outlined, color: Colors.red),
                                     onPressed: () {
@@ -179,7 +179,7 @@ class _HomeTabState extends State<HomeTab> {
                                 IconButton(
                                   icon: Icon(Icons.share_outlined),
                                   onPressed: () {
-                                    _handleShare(post['postImageUrl'] ?? ''); // Safeguard postImageUrl for null
+                                    _handleShare(post['postImageUrl'] ?? '');
                                   },
                                 ),
                               ],
@@ -188,7 +188,7 @@ class _HomeTabState extends State<HomeTab> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              post['caption'] ?? '', // Safeguard caption for null
+                              post['caption'] ?? '',
                               style: TextStyle(
                                 fontSize: 16,
                               ),
@@ -221,14 +221,14 @@ class _HomeTabState extends State<HomeTab> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
               },
               child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
                 await _flagPost(postId, reasonController.text);
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
               },
               child: Text('Submit'),
             ),
@@ -239,6 +239,7 @@ class _HomeTabState extends State<HomeTab> {
   }
   Future<void> _flagPost(String postId, String reason) async {
     await _flaggedPostsRef.child(postId).set({
+      'postID': postId,
       'flaggedBy': currentUserId,
       'reason': reason,
       'timestamp': DateTime.now().toIso8601String(),
@@ -284,7 +285,7 @@ class _HomeTabState extends State<HomeTab> {
 
   Future<void> _showEditPostDialog(String postId, String currentCaption, String currentImageUrl) async {
     TextEditingController captionController = TextEditingController(text: currentCaption);
-    String? selectedImageUrl; // Declare selectedImageUrl here
+    String? selectedImageUrl;
 
     showDialog(
       context: context,
@@ -306,14 +307,11 @@ class _HomeTabState extends State<HomeTab> {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () async {
-                  // Use image picker to select a new image
                   final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
                   if (image != null) {
-                    // Upload the selected image to Firebase Storage
-                    String newImageUrl = await _uploadImageToFirebase(image.path); // Get the URL of the selected image
-                    // Update the state to show the new image in the dialog
+
+                    String newImageUrl = await _uploadImageToFirebase(image.path);
                     setState(() {
-                      // Update the variable with the new image URL
                     });
                   }
                 },
@@ -324,15 +322,14 @@ class _HomeTabState extends State<HomeTab> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
               },
               child: Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
-                // Update the post only when Save is clicked
                 await _updatePost(postId, captionController.text, selectedImageUrl ?? currentImageUrl);
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
               },
               child: Text('Save'),
             ),
@@ -344,30 +341,25 @@ class _HomeTabState extends State<HomeTab> {
 
 
   Future<String> _uploadImageToFirebase(String filePath) async {
-    String fileName = path.basename(filePath); // Get the file name from the file path
+    String fileName = path.basename(filePath);
     Reference storageRef = FirebaseStorage.instance.ref().child('postImages/$fileName');
 
-    // Upload the image file to Firebase Storage
     UploadTask uploadTask = storageRef.putFile(File(filePath));
-
-    // Wait for the upload to complete
     TaskSnapshot taskSnapshot = await uploadTask;
-
-    // Get the download URL for the uploaded image
     String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return downloadUrl;
   }
   Future<void> _updatePost(String postId, String newCaption, String newImageUrl) async {
     await _postsRef.child(postId).update({
       'caption': newCaption,
-      'postImageUrl': newImageUrl, // Update the image URL
+      'postImageUrl': newImageUrl,
     });
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Post updated successfully')));
   }
 
   Future<void> _updatePostImageUrl(String postId, String newImageUrl) async {
     await FirebaseDatabase.instance.ref('posts').child(postId).update({
-      'postImageUrl': newImageUrl, // Update the postImageUrl field
+      'postImageUrl': newImageUrl,
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Post image updated successfully')),
@@ -377,6 +369,6 @@ class _HomeTabState extends State<HomeTab> {
 
   void _handleShare(String postImageUrl) {
     print('Share button clicked! Image URL: $postImageUrl');
-    // Implement sharing logic (e.g., using the `share_plus` package)
+
   }
 }

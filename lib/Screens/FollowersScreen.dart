@@ -31,7 +31,7 @@ class FollowersScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 String followerId = followerIds[index];
 
-                // Use FutureBuilder to fetch follower's details
+
                 return FutureBuilder<DataSnapshot>(
                   future: FirebaseDatabase.instance.ref('users/$followerId').get(),
                   builder: (context, userSnapshot) {
@@ -70,9 +70,7 @@ class FollowersScreen extends StatelessWidget {
                               : AssetImage('assets/profile_placeholder.png') as ImageProvider,
                         ),
                         title: Text(userName),
-                        onTap: () {
-                          // Navigate to follower's profile (implement this)
-                        },
+
                       );
                     }
                   },

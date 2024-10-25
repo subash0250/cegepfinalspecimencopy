@@ -30,8 +30,6 @@ class FollowingScreen extends StatelessWidget {
               itemCount: followingIds.length,
               itemBuilder: (context, index) {
                 String followingId = followingIds[index];
-
-                // Fetch each followed user's details
                 return FutureBuilder<DataSnapshot>(
                   future: FirebaseDatabase.instance.ref('users/$followingId').get(),
                   builder: (context, userSnapshot) {
@@ -71,7 +69,7 @@ class FollowingScreen extends StatelessWidget {
                         ),
                         title: Text(userName),
                         onTap: () {
-                          // Navigate to the followed user's profile (implement navigation logic)
+                          // Navigate to the followed user's profile
                         },
                       );
                     }
