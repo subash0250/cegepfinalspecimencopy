@@ -18,9 +18,22 @@ class _ContentModerationScreenState extends State<ContentModerationScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchFlaggedPosts();
+    _setupRealTimeListeners();
   }
 
+  void _setupRealTimeListeners() {
+    // Listener for new or updated posts
+    _flaggedPostsRef.onChildAdded.listen((event) {
+      _fetchFlaggedPosts();
+    });
+    _flaggedPostsRef.onChildRemoved.listen((event) {
+      setState(() {
+        _flaggedPosts.removeWhere(
+                (post) => post.flaggedPostID == event.snapshot.key);
+      });
+    });
+
+  }
   Future<void> _fetchFlaggedPosts() async {
     try {
       DatabaseEvent event = await _flaggedPostsRef.once();
@@ -94,15 +107,12 @@ class _ContentModerationScreenState extends State<ContentModerationScreen> {
         await _flaggedPostsRef.child(flaggedPostID).remove();
 
         if (postID != null && postID.isNotEmpty) {
-          // Delete the corresponding post from the 'posts' table.
           await FirebaseDatabase.instance.ref('posts').child(postID).remove();
           print('Successfully deleted post $postID from both tables.');
         } else {
           print('PostID not found. Only deleted from flaggedPosts.');
         }
 
-        // Refresh the list of flagged posts.
-        _fetchFlaggedPosts();
       } else {
         print('Flagged post not found.');
       }
