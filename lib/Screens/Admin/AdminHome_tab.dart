@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutterspecimencopy/Screens/PostsScreen_Admin.dart';
-import 'package:flutterspecimencopy/Screens/UserManagementScreen_Admin.dart';
-import '../screens/ContentModerationScreen_Admin.dart';
+import 'package:flutterspecimencopy/Screens/Admin/PostsScreen_Admin.dart';
+import 'package:flutterspecimencopy/Screens/Admin/UserManagementScreen_Admin.dart';
+import '../../screens/Admin/ContentModerationScreen_Admin.dart';
 
 class AdminHomeTab extends StatefulWidget {
   @override

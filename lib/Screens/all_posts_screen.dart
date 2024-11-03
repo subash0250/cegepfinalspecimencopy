@@ -1,34 +1,36 @@
+
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-class UserPostsScreen extends StatefulWidget {
-  final String userId;
+class AllPostsScreen extends StatefulWidget {
+  // final String userId;
 
-  UserPostsScreen({super.key,required this.userId});
+  const AllPostsScreen({super.key});
 
   @override
-  _UserPostsScreenState createState() => _UserPostsScreenState();
+  _AllPostsScreenState createState() => _AllPostsScreenState();
 }
 
-class _UserPostsScreenState extends State<UserPostsScreen> {
+class _AllPostsScreenState extends State<AllPostsScreen> {
   final FirebaseDatabase _database = FirebaseDatabase.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   List<Map<dynamic, dynamic>> userPosts = [];
 
-
+  // Show loading dialog
   void _showLoadingSpinner(BuildContext context) {
     showDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (context) => Center(
-        child: CircularProgressIndicator(),
+      barrierDismissible: false, // Prevent closing the dialog
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(), // Loading spinner
       ),
     );
   }
 
+  // Dismiss loading dialog
   void _hideLoadingSpinner(BuildContext context) {
     Navigator.of(context).pop();
   }
@@ -39,11 +41,11 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     _loadUserPosts();
   }
 
-
+  // Load user's posts
   void _loadUserPosts() {
     DatabaseReference postsRef = _database.ref('posts');
 
-    postsRef.orderByChild('userId').equalTo(widget.userId).onValue.listen((DatabaseEvent event) {
+    postsRef.onValue.listen((DatabaseEvent event) {
       if (event.snapshot.exists) {
         Map<dynamic, dynamic> posts = event.snapshot.value as Map<dynamic, dynamic>;
         setState(() {
@@ -55,10 +57,10 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     });
   }
 
-
+  // Pick image from gallery
   Future<File?> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedImage = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedImage != null) {
       return File(pickedImage.path);
@@ -66,7 +68,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     return null;
   }
 
-
+  // Upload the image to Firebase Storage and return the download URL
   Future<String?> _uploadImage(File image, String postId) async {
     _showLoadingSpinner(context);
 
@@ -83,6 +85,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     }
   }
 
+  // Edit post (caption and postImageUrl)
   void _editPost(String postId, String currentCaption, String currentImageUrl) async {
     TextEditingController captionController = TextEditingController(text: currentCaption);
     TextEditingController imageUrlController = TextEditingController(text: currentImageUrl);
@@ -92,23 +95,23 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Edit Post'),
+          title: const Text('Edit Post'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: captionController,
-                decoration: InputDecoration(labelText: 'Caption'),
+                decoration: const InputDecoration(labelText: 'Caption'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () async {
                   newImageFile = await _pickImage(); // Pick new image
                   if (newImageFile != null) {
-                    imageUrlController.text = 'Image selected. Will be uploaded.';
+                    imageUrlController.text = 'Image selected. Will be uploaded.'; // Show placeholder text
                   }
                 },
-                child: Text('Pick New Image'),
+                child: const Text('Pick New Image'),
               ),
             ],
           ),
@@ -117,22 +120,22 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () async {
                 String? newImageUrl;
 
-
+                // If a new image was selected, upload it to Firebase Storage
                 if (newImageFile != null) {
                   newImageUrl = await _uploadImage(newImageFile!, postId);
                 }
 
-
+                // Update Firebase Realtime Database with the new caption and (optional) image URL
                 DatabaseReference postRef = _database.ref('posts/$postId');
                 postRef.update({
                   'caption': captionController.text,
-                  'postImageUrl': newImageUrl ?? currentImageUrl,
+                  'postImageUrl': newImageUrl ?? currentImageUrl, // Update URL only if a new one was uploaded
                 }).then((_) {
                   setState(() {
                     for (var post in userPosts) {
@@ -148,13 +151,13 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
                   _hideLoadingSpinner(context);
 
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Post updated successfully')),
+                    const SnackBar(content: Text('Post updated successfully')),
                   );
                 }).catchError((error) {
                   print('Error updating post: $error');
                 });
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
           ],
         );
@@ -162,7 +165,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
     );
   }
 
-
+  // Delete a post
   void _deletePost(String postId) {
     DatabaseReference postRef = _database.ref('posts/$postId');
     postRef.remove().then((_) {
@@ -170,7 +173,7 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
         userPosts.removeWhere((post) => post['postId'] == postId);
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Post deleted successfully')),
+        const SnackBar(content: Text('Post deleted successfully')),
       );
     }).catchError((error) {
       print('Error deleting post: $error');
@@ -181,44 +184,87 @@ class _UserPostsScreenState extends State<UserPostsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Posts', style: TextStyle(color: Colors.white)),
+        title: const Text('My Posts', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: ListView.builder(
         itemCount: userPosts.length,
         itemBuilder: (context, index) {
           Map<dynamic, dynamic> post = userPosts[index];
-          return ListTile(
-            title: Text(post['caption']),
 
-            leading: post['postImageUrl'] != null
-                ? Image.network(post['postImageUrl'])
-                : SizedBox.shrink(),
-            trailing: PopupMenuButton<String>(
-              onSelected: (value) {
-                if (value == 'edit') {
-                  _editPost(post['postId'], post['caption'], post['postImageUrl']);
-                } else if (value == 'delete') {
-                  _deletePost(post['postId']);
-                }
-              },
-              itemBuilder: (BuildContext context) {
-                return [
-                  PopupMenuItem(
-                    value: 'edit',
-                    child: Text('Edit'),
-                  ),
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Text('Delete'),
-                  ),
-                ];
-              },
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          post['caption'] ?? '',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        PopupMenuButton<String>(
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              _editPost(post['postId'], post['caption'], post['postImageUrl']);
+                            } else if (value == 'delete') {
+                              _deletePost(post['postId']);
+                            }
+                          },
+                          itemBuilder: (BuildContext context) {
+                            return [
+                              const PopupMenuItem(
+                                value: 'edit',
+                                child: Text('Edit'),
+                              ),
+                              const PopupMenuItem(
+                                value: 'delete',
+                                child: Text('Delete'),
+                              ),
+                            ];
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    if (post['postImageUrl'] != null && post['postImageUrl'].toString().isNotEmpty)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          post['postImageUrl'],
+                          fit: BoxFit.cover,
+                          height: 200,
+                          width: double.infinity,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Text('Error loading image');
+                          },
+                        ),
+                      ),
+                    const SizedBox(height: 10),
+                    // Text(
+                    //   post['timestamp'] != null ? _formatTimestamp(post['timestamp']) : '',
+                    //   style: TextStyle(color: Colors.grey),
+                    // ),
+                  ],
+                ),
+              ),
             ),
           );
         },
       ),
+
     );
   }
 }

@@ -73,7 +73,7 @@ class _PostTabState extends State<PostTab> {
 
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Post uploaded successfully! 456')),
+          SnackBar(content: Text('Post uploaded successfully!')),
         );
 
 

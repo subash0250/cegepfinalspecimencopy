@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'edit_profile_screen.dart';
+import 'moderator/ModeratorUsersScreen.dart';
 import 'user_posts_screen.dart';
 import 'FollowersScreen.dart';
 import 'FollowingScreen.dart';
@@ -21,9 +22,11 @@ class _ProfileTabState extends State<ProfileTab> {
   String? userProfileImage;
   String? userEmail;
   String? userId;
+  String? userRole;
   int postCount = 0;
   int followersCount = 0;
   int followingCount = 0;
+  List<Map<String, dynamic>> warnings = [];
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _ProfileTabState extends State<ProfileTab> {
     _loadUserPostsCount();
     _loadFollowersCount();
     _loadFollowingCount();
+    _loadWarnings();
   }
 
   void _loadUserData() async {
@@ -48,8 +52,9 @@ class _ProfileTabState extends State<ProfileTab> {
           setState(() {
             userName = userData['userName'] ?? 'Unknown';
             userBio = userData['userBio'] ?? 'No bio available';
-            userProfileImage = userData['userProfileImage'] ?? 'assets/profile_placeholder.png';
+            userProfileImage = userData['userProfileImage'] ?? 'assets/images/profile_placeholder.png';
             userEmail = userData['userEmail'] ?? 'No email available';
+            userRole = userData['userRole'] ?? 'User';
           });
         }
       }, onError: (error) {
@@ -127,6 +132,56 @@ class _ProfileTabState extends State<ProfileTab> {
       });
     }
   }
+  void _loadWarnings() async {
+    if (userId != null) {
+      DatabaseReference warningsRef = _database.ref('users/$userId/userWarnings');
+
+      warningsRef.onValue.listen((DatabaseEvent event) async {
+        if (event.snapshot.exists) {
+          Map<dynamic, dynamic> warningsData = event.snapshot.value as Map;
+          List<Map<String, dynamic>> loadedWarnings = [];
+
+          for (var warningKey in warningsData.keys) {
+            var warning = warningsData[warningKey];
+            String postId = warning['postId'];
+            String message = warning['message'];
+
+            // Fetch caption from posts node
+            DatabaseReference postRef = _database.ref('posts/$postId');
+            DataSnapshot postSnapshot = await postRef.get();
+
+            if (postSnapshot.exists) {
+              String caption = postSnapshot.child('caption').value as String;
+              loadedWarnings.add({
+                'message': message,
+                'caption': caption,
+                'postId': postId,
+              });
+            } else {
+              loadedWarnings.add({
+                'message': message,
+                'caption': 'Caption not found', // Fallback in case the post is missing
+                'postId': postId,
+              });
+            }
+          }
+
+          setState(() {
+            warnings = loadedWarnings;
+          });
+
+          print("Warnings with captions loaded: $warnings");
+        } else {
+          setState(() {
+            warnings = [];
+          });
+          print("No warnings found for the user.");
+        }
+      }, onError: (error) {
+        print('Error loading warnings: $error');
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +207,7 @@ class _ProfileTabState extends State<ProfileTab> {
                     radius: 50,
                     backgroundImage: userProfileImage != null
                         ? NetworkImage(userProfileImage!)
-                        : AssetImage('assets/profile_placeholder.png') as ImageProvider,
+                        : AssetImage('assets/images/profile_placeholder.png') as ImageProvider,
                   ),
                   SizedBox(height: 10),
                   Text(
@@ -171,6 +226,40 @@ class _ProfileTabState extends State<ProfileTab> {
                       fontSize: 16,
                     ),
                   ),
+                  if (userRole == 'user' && warnings.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Warnings:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: warnings.length,
+                            itemBuilder: (context, index) {
+                              final warning = warnings[index] as Map<String, dynamic>; // Cast to Map<String, dynamic>
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 5),
+                                child: Text(
+                                  "- ${warning['message']} (Caption: ${warning['caption']})",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -247,7 +336,40 @@ class _ProfileTabState extends State<ProfileTab> {
                 ),
               ),
             ),
+
             SizedBox(height: 20),
+
+            if (userRole == 'moderator')
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ModeratorUsersScreen()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'All Posts',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            const SizedBox(height: 20),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: ElevatedButton(
