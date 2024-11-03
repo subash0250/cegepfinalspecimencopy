@@ -32,7 +32,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-
   void _hideLoadingSpinner(BuildContext context) {
     Navigator.of(context).pop();
   }

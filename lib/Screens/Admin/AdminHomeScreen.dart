@@ -1,9 +1,9 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutterspecimencopy/Screens/AdminHome_tab.dart';
-import 'package:flutterspecimencopy/Screens/UserManagementScreen_Admin.dart';
+import 'package:flutterspecimencopy/Screens/Admin/AdminHome_tab.dart';
+import 'package:flutterspecimencopy/Screens/Admin/UserManagementScreen_Admin.dart';
 import 'ContentModerationScreen_Admin.dart';
-import 'profile_tab.dart';
+import '../profile_tab.dart';
 
 
 

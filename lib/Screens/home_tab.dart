@@ -52,8 +52,8 @@ class _HomeTabState extends State<HomeTab> {
             itemCount: postList.length,
             itemBuilder: (context, index) {
               Map<dynamic, dynamic> post = postList[index];
-              String postId = post['postId'] ?? '';
-              String postOwnerId = post['userId'] ?? '';
+              String postId = post['postId'] ?? '';//extra
+              String postOwnerId = post['userId'] ?? '';//extra
 
               return FutureBuilder(
                 future: _usersRef.child(postOwnerId).once(),
@@ -82,7 +82,7 @@ class _HomeTabState extends State<HomeTab> {
                                   radius: 20,
                                   backgroundImage: (user['userProfileImage'] != null && user['userProfileImage'].toString().isNotEmpty)
                                       ? NetworkImage(user['userProfileImage'] as String)
-                                      : AssetImage('assets/profile_placeholder.png') as ImageProvider,
+                                      : AssetImage('assets/images/profile_placeholder.png') as ImageProvider,
                                 ),
                                 SizedBox(width: 10),
                                 Text(
@@ -132,7 +132,23 @@ class _HomeTabState extends State<HomeTab> {
                             },
                           )
                               : Container(height: 250, color: Colors.grey[300], child: Center(child: Text('No Image Available'))),
-
+                          if (post['locationName'] != null && post['locationName'] != null) // Check if location is available
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.location_on, color: Colors.red), // Location icon
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    post['locationName'], // Display the location name
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(

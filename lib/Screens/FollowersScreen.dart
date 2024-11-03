@@ -54,7 +54,7 @@ class FollowersScreen extends StatelessWidget {
                     } else if (!userSnapshot.hasData || userSnapshot.data!.value == null) {
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundImage: AssetImage('assets/profile_placeholder.png'),
+                          backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
                         ),
                         title: Text('Unknown user'),
                       );
@@ -67,7 +67,7 @@ class FollowersScreen extends StatelessWidget {
                         leading: CircleAvatar(
                           backgroundImage: profileImage != null
                               ? NetworkImage(profileImage)
-                              : AssetImage('assets/profile_placeholder.png') as ImageProvider,
+                              : AssetImage('assets/images/profile_placeholder.png') as ImageProvider,
                         ),
                         title: Text(userName),
 

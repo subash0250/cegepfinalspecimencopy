@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'home_tab.dart';
-import 'followers_tab.dart';
-import 'post_tab.dart';
-import 'profile_tab.dart';
+import '../home_tab.dart';
+import '../followers_tab.dart';
+import '../post_tab.dart';
+import '../profile_tab.dart';
 
 class Moderatorhomescreen extends StatefulWidget {
   @override
@@ -34,19 +34,19 @@ class _ModeratorhomescreenState extends State<Moderatorhomescreen> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'moderator',
+            label: 'Home',
             backgroundColor: Colors.black,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.report),
-            label: 'Reports',
+            icon: Icon(Icons.group),
+            label: 'Followers',
             backgroundColor: Colors.black,
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.add),
-          //   label: 'Post',
-          //   backgroundColor: Colors.black, // Background color for Post tab
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Post',
+            backgroundColor: Colors.black,
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'Profile',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'comment_screen.dart';
+import 'package:flutterspecimencopy/Screens/comment_screen.dart';
 
 
 
@@ -75,7 +75,7 @@ class _PostsScreenAdminState extends State<PostsScreenAdmin> {
                                   radius: 20,
                                   backgroundImage: (user['userProfileImage'] != null && user['userProfileImage'].toString().isNotEmpty)
                                       ? NetworkImage(user['userProfileImage'] as String)
-                                      : AssetImage('assets/profile_placeholder.png') as ImageProvider,
+                                      : AssetImage('assets/images/profile_placeholder.png') as ImageProvider,
                                 ),
                                 SizedBox(width: 10),
                                 Text(
